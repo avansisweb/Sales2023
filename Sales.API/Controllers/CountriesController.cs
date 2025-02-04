@@ -16,6 +16,24 @@ namespace Sales.API.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAsync()
+        {
+            var countries = await _context.Countries.ToListAsync();
+            return Ok(countries);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetAsync(int id)
+        {
+            var country = await _context.Countries.FirstOrDefaultAsync(x => x.Id == id);
+            if (country == null)
+            {
+                return NotFound();
+            }
+            return Ok(country);
+        }
+
         [HttpPost]
         public async Task<ActionResult> PostAsync(Country country)
         {
@@ -24,11 +42,25 @@ namespace Sales.API.Controllers
             return Ok(country);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        [HttpPut]
+        public async Task<ActionResult> PutAsync(Country country)
         {
-            var countries = await _context.Countries.ToListAsync();
-            return Ok(countries);
+            _context.Update(country);
+            await _context.SaveChangesAsync();
+            return Ok(country);
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var country = await _context.Countries.FirstOrDefaultAsync(x => x.Id == id);
+            if (country == null)
+            {
+                return NotFound();
+            }
+            _context.Remove(country);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

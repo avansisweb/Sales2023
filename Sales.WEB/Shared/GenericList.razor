@@ -1,0 +1,48 @@
+﻿@typeparam Titem
+
+@if (MyList is null)
+{
+    @if (Loading is null)
+    {
+        <div class="align-items-center">
+            <img src="https://www.bing.com/images/search?view=detailV2&ccid=jHiu9AX3&id=1C6A76A159958BFD23BCEA88303B2E9648EE4137&thid=OIP.jHiu9AX3T_UOhEu8JQkADgHaHa&mediaurl=https%3a%2f%2fwww.icegif.com%2fwp-content%2fuploads%2f2023%2f07%2ficegif-1260.gif&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.8c78aef405f74ff50e844bbc2509000e%3frik%3dN0HuSJYuOzCI6g%26pid%3dImgRaw%26r%3d0&exph=500&expw=500&q=loading+gif&simid=608025713482599710&FORM=IRPRST&ck=A442D2FE4553031AA737DEF2DDE67650&selectedIndex=3&itb=0" alt="Cargando..." />
+        </div>
+    }
+    else
+    {
+        @Loading
+    }
+}
+else if (MyList.Count == 0)
+{
+    @if (NoRecords is null)
+    {
+        <div class="align-items-center">
+            <p>No hay registros para mostrar.</p>
+        </div>
+    }
+    else
+    {
+        @NoRecords
+    }
+}
+else
+{
+    @Body
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? Loading { get; set; }
+
+    [Parameter]
+    public RenderFragment? NoRecords { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment Body { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public List<Titem> MyList { get; set; } = null!;
+}

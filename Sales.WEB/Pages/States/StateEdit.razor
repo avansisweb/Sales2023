@@ -1,29 +1,29 @@
-﻿@page "/countries/edit/{CountryId:int}"
+﻿@page "/states/edit/{StateId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
-<h3>Editar País</h3>
+<h3>Editar Estado / Departamento</h3>
 
-@if (country is null)
+@if (state is null)
 {
     <p>Cargando...</p>
 }
 else
 {
-    <CountryForm @ref="countryForm" Country="country" OnValidSubmit="EditAsync" ReturnAction="Return"></CountryForm>
+    <StateForm @ref="stateForm" State="state" OnValidSubmit="EditAsync" ReturnAction="Return"></StateForm>
 }
 
 @code {
-    private Country? country;
-    private CountryForm? countryForm;
+    private State? state;
+    private StateForm? stateForm;
 
     [Parameter]
-    public int CountryId { get; set; }
+    public int StateId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repository.Get<Country>($"/api/countries/{CountryId}");
+        var responseHttp = await repository.Get<State>($"/api/states/{StateId}");
         if (responseHttp.Error)
         {
             if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -37,12 +37,12 @@ else
             return;
         }
 
-        country = responseHttp.Response;
+        state = responseHttp.Response;
     }
 
     private async Task EditAsync()
     {
-        var httpResponse = await repository.Put($"/api/countries", country);
+        var httpResponse = await repository.Put($"/api/states", state);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
@@ -55,7 +55,7 @@ else
 
     private void Return()
     {
-        countryForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo("/countries");
+        stateForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/countries/details/{state!.CountryId}");
     }
 }

@@ -5,17 +5,17 @@
 
 <h3>Crear País</h3>
 
-<CountryForm @ref="countryForm" Country="country" OnValidSubmit="Create" ReturnAction="Return">
+<CountryForm @ref="countryForm" Country="country" OnValidSubmit="CreateAsync" ReturnAction="Return">
 
 </CountryForm>
 
 @code {
     private Country country = new Country();
-    public CountryForm? countryForm;
+    private CountryForm? countryForm;
 
-    private async Task Create()
+    private async Task CreateAsync()
     {
-        var httpResponse = await repository.Post<Country, Country>("/api/countries", country);
+        var httpResponse = await repository.Post("/api/countries", country);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();

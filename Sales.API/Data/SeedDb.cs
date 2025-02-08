@@ -26,7 +26,8 @@ namespace Sales.API.Data
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("1010", "Juan", "Zuluaga", "zulu@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
+            //await CheckUserAsync("1010", "Juan", "Zuluaga", "zulu@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
+            await CheckUserAsync("1093216061", "Juan David", "Osorio Calderon", "asesor1@avansis.com.co", "3148909879", "Calle 22B 14 24", UserType.Admin);
         }
 
         private async Task CheckRolesAsync()

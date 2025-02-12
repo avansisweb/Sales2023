@@ -1,0 +1,233 @@
+﻿@page "/RegistroEmpresa"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+@inject ILoginService loginService
+
+<div class="row">
+    <div class="col-md-4  offset-md-4">
+        <EditForm Model="EmpresaDTO" OnValidSubmit="CreteUserAsync">
+            <DataAnnotationsValidator />
+            <div class="card">
+                <div class="card-header">
+                    <span>
+                        <i class="oi oi-person" /> Registrar Nuevo  Usuario
+                        @* <button class="btn btn-sm btn-primary float-end" type="submit"><i class="oi oi-check" /> Registrar</button> *@
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="mb-3">
+                            <label>Empresa:</label>
+                            <div>
+                                <InputText class="form-control" @bind-Value="@EmpresaDTO.NombreEmpresa" />
+                                <ValidationMessage For="@(() => EmpresaDTO.NombreEmpresa)" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Email:</label>
+                            <div>
+                                <InputText class="form-control" @bind-Value="@EmpresaDTO.Email" />
+                                <ValidationMessage For="@(() => EmpresaDTO.Email)" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>País:</label>
+                            <div>
+                                <select class="form-select" @onchange="CountryChangedAsync">
+                                    <option value="0">-- Seleccione un país --</option>
+                                    @if (countries is not null)
+                                    {
+                                        @foreach (var country in countries)
+                                        {
+                                            <option value="@country.Id">@country.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Estado/Departamento:</label>
+                            <div>
+                                <select class="form-select" @onchange="StateChangedAsync">
+                                    <option value="0">-- Seleccione un estado/departamento --</option>
+                                    @if (states is not null)
+                                    {
+                                        @foreach (var state in states)
+                                        {
+                                            <option value="@state.Id">@state.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Ciudad:</label>
+                            <div>
+                                <select class="form-select" @bind="userDTO.CityId">
+                                    <option value="0">-- Seleccione una ciudad --</option>
+                                    @if (cities is not null)
+                                    {
+                                        @foreach (var city in cities)
+                                        {
+                                            <option value="@city.Id">@city.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <ValidationMessage For="@(() => userDTO.CityId)" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Contraseña:</label>
+                            <div>
+                                <InputText type="password" class="form-control" @bind-Value="@EmpresaDTO.Password" />
+                                <ValidationMessage For="@(() => EmpresaDTO.Password)" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Confirmación de contraseña:</label>
+                            <div>
+                                <InputText type="password" class="form-control" @bind-Value="@EmpresaDTO.PasswordConfirm" />
+                                <ValidationMessage For="@(() => EmpresaDTO.PasswordConfirm)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-sm btn-primary float-end" type="submit"><i class="oi oi-check" /> Registrar</button>                    
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private EmpresaDTO EmpresaDTO = new();
+    private Empresa empresa = new();
+
+    private UserDTO userDTO = new();
+    private List<Country>? countries;
+    private List<State>? states;
+    private List<City>? cities;
+    // private string? imageUrl;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool IsAdmin { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCountriesAsync();
+    }
+
+    private async Task CountryChangedAsync(ChangeEventArgs e)
+    {
+        var selectedCountry = Convert.ToInt32(e.Value!);
+        await LoadStatesAsyn(selectedCountry);
+    }
+
+    private async Task StateChangedAsync(ChangeEventArgs e)
+    {
+        var selectedState = Convert.ToInt32(e.Value!);
+        await LoadCitiesAsyn(selectedState);
+    }
+
+    private async Task LoadCountriesAsync()
+    {
+        var responseHttp = await repository.Get<List<Country>>("/api/countries/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        countries = responseHttp.Response;
+    }
+
+    private async Task LoadStatesAsyn(int countryId)
+    {
+        var responseHttp = await repository.Get<List<State>>($"/api/states/combo/{countryId}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        states = responseHttp.Response;
+    }
+
+    private async Task LoadCitiesAsyn(int stateId)
+    {
+        var responseHttp = await repository.Get<List<City>>($"/api/cities/combo/{stateId}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        cities = responseHttp.Response;
+    }
+
+    private async Task CreteUserAsync()
+    {
+        var responseHttp = await repository.Get<bool>($"/api/Empresas/ExisteEmpresa/{EmpresaDTO.Email}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        if (responseHttp.Response)
+        {
+            await sweetAlertService.FireAsync("Error", "Ya existe una empresa con el correo electrónico ingresado.", SweetAlertIcon.Error);
+            return;
+        }
+        else
+        {
+            empresa.NombreEmpresa = EmpresaDTO.NombreEmpresa;
+            empresa.Email = EmpresaDTO.Email;
+            empresa.Estado = true;
+            var httpResponse1 = await repository.Post<Empresa, int>("/api/empresas", empresa);
+            if (httpResponse1.Error)
+            {
+                var message = await httpResponse1.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+
+            userDTO.Email = EmpresaDTO.Email;
+            userDTO.UserName = userDTO.Email;
+            userDTO.Password = EmpresaDTO.Password;
+            userDTO.PasswordConfirm = EmpresaDTO.PasswordConfirm;
+            userDTO.EmpresaId = httpResponse1.Response;
+            userDTO.UserType = UserType.Admin;
+
+            userDTO.Document = "1093216061";
+            userDTO.FirstName = "Juan David";
+            userDTO.LastName = "Osorio Calderon";
+            userDTO.Address = "Calle";
+            userDTO.PhoneNumber = "3148909879";
+
+            var responseHttp2 = await repository.Post<UserDTO>("/api/accounts/CreateUser", userDTO);
+            if (responseHttp2.Error)
+            {
+                var message = await responseHttp2.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+
+            // var responseHttp2 = await repository.Post<EmpresaDTO, bool>("/api/accounts/CreateEmpresa", EmpresaDTO);
+            // if (responseHttp2.Error)
+            // {
+            //     var message = await responseHttp2.GetErrorMessageAsync();
+            //     await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            //     return;
+            // }
+        }
+        await sweetAlertService.FireAsync("Confirmación", "Su cuenta ha sido creada con éxito. Se te ha enviado un correo electrónico con las instrucciones para activar tu usuario.", SweetAlertIcon.Info);
+        navigationManager.NavigateTo("/");
+    }
+}

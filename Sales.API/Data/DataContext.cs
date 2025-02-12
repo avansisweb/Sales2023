@@ -17,6 +17,10 @@ namespace Sales.API.Data
 
         public DbSet<State> States { get; set; }
 
+        public DbSet<Empresa> Empresas { get; set; }
+
+        public DbSet<Cuenta> Cuentas { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -18,15 +18,15 @@ namespace Sales.WEB.Auth
             //},
             //authenticationType: "test");
             //return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(zuluUser)));
-            var adminUser = new ClaimsIdentity(new List<Claim>
-            {
-                new Claim("FirstName", "Juan David"),
-                new Claim("LastName", "Osorio Calderón"),
-                new Claim(ClaimTypes.Name, "asesor1@avansis.com.co"),
-                new Claim(ClaimTypes.Role, "Admin")
-            },
-            authenticationType: "test");
-            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(adminUser)));
+            //var adminUser = new ClaimsIdentity(new List<Claim>
+            //{
+            //    new Claim("FirstName", "Juan David"),
+            //    new Claim("LastName", "Osorio Calderón"),
+            //    new Claim(ClaimTypes.Name, "asesor1@avansis.com.co"),
+            //    new Claim(ClaimTypes.Role, "Admin")
+            //},
+            //authenticationType: "test");
+            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(anonimous)));
         }
     }
 }

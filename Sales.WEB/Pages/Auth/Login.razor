@@ -8,7 +8,6 @@
     <div class="col-md-4  offset-md-4">
         <EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
             <DataAnnotationsValidator />
-
             <div class="card bg-light">
                 <div class="card-header justify-content-center">
                     <span>
@@ -42,6 +41,7 @@
 </div>
 
 @code {
+    [CascadingParameter] protected ServicioUsuario? ServicioUsuario { get; set; }
     private LoginDTO loginDTO = new();
 
     private async Task LoginAsync()
@@ -54,7 +54,39 @@
             return;
         }
 
+        ServicioUsuario = new ServicioUsuario();
+        var usuario = responseHttp.Response;
+        ServicioUsuario.Email = usuario.Email;
+        ServicioUsuario.TipoUsuario = usuario.TipoUsuario;
+        ServicioUsuario.Empresa = usuario.EmpresaId;
+        ServicioUsuario.UsuarioId = usuario.Id;
+
         await loginService.LoginAsync(responseHttp.Response!.Token);
+
+        // Crear Cuentas
+        await CrearCuentas(ServicioUsuario.Empresa);
+
         navigationManager.NavigateTo("/");
+    }
+
+    private async Task CrearCuentas(int empresaId) 
+    {
+        List<Cuenta> Cuentas = new List<Cuenta>();
+        Cuenta cuenta = new Cuenta()
+            {
+                IdCuenta = 1,
+                CodigoCuenta = "1",
+                NombreCuenta = "DISPONIBLE",
+                Nivel = "1",
+                Estado = true,
+                TipoBase = "1",
+                EmpresaId = empresaId
+            };
+        Cuentas.Add(cuenta);
+        var responseHttp2 = await repository.Post("api/Cuentas/CuentasBase", cuenta);
+        if (responseHttp2.Error)
+        {
+
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace Sales.API.Data
             await CheckCountriesAsync();
             await CheckRolesAsync();
             //await CheckUserAsync("1010", "Juan", "Zuluaga", "zulu@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
-            await CheckUserAsync("1093216061", "Juan David", "Osorio Calderon", "asesor1@avansis.com.co", "3148909879", "Calle 22B 14 24", UserType.Admin);
+            //await CheckUserAsync("1093216061", "Juan David", "Osorio Calderon", "asesor1@avansis.com.co", "3148909879", "Calle 22B 14 24", UserType.Admin);
         }
 
         private async Task CheckRolesAsync()
@@ -36,39 +36,50 @@ namespace Sales.API.Data
             await _userHelper.CheckRoleAsync(UserType.User.ToString());
         }
 
-        private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)
-        {
-            var user = await _userHelper.GetUserAsync(email);
-            if (user == null)
-            {
-                var city = await _context.Cities.FirstOrDefaultAsync(x => x.Name == "Medellín");
-                if (city == null)
-                {
-                    city = await _context.Cities.FirstOrDefaultAsync();
-                }
+        //private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)
+        //{
+        //    var user = await _userHelper.GetUserAsync(email);
+        //    if (user == null)
+        //    {
+        //        var city = await _context.Cities.FirstOrDefaultAsync(x => x.Name == "Medellín");
+        //        if (city == null)
+        //        {
+        //            city = await _context.Cities.FirstOrDefaultAsync();
+        //        }
 
-                user = new User
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    Email = email,
-                    UserName = email,
-                    PhoneNumber = phone,
-                    Address = address,
-                    Document = document,
-                    City = city,
-                    UserType = userType,
-                };
+        //        //user = new User
+        //        //{
+        //        //    FirstName = firstName,
+        //        //    LastName = lastName,
+        //        //    Email = email,
+        //        //    UserName = email,
+        //        //    PhoneNumber = phone,
+        //        //    Address = address,
+        //        //    Document = document,
+        //        //    City = city,
+        //        //    UserType = userType,
+        //        //};
+        //        user = new User
+        //        {
+        //            FirstName = firstName,
+        //            LastName = lastName,
+        //            Email = email,
+        //            UserName = email,
+        //            PhoneNumber = phone,
+        //            Address = address,
+        //            Document = document,
+        //            UserType = userType,
+        //        };
 
-                await _userHelper.AddUserAsync(user, "123456");
-                await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+        //        await _userHelper.AddUserAsync(user, "123456");
+        //        await _userHelper.AddUserToRoleAsync(user, userType.ToString());
 
-                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                await _userHelper.ConfirmEmailAsync(user, token);
-            }
+        //        var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+        //        await _userHelper.ConfirmEmailAsync(user, token);
+        //    }
 
-            return user;
-        }
+        //    return user;
+        //}
 
         private async Task CheckCountriesAsync()
         {

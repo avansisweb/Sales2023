@@ -143,16 +143,16 @@ namespace Sales.API.Controllers
             private TokenDTO BuildToken(User user)
             {
                 var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Email!),
-                new Claim(ClaimTypes.Role, user.UserType.ToString()),
-                new Claim("Document", user.Document),
-                new Claim("FirstName", user.FirstName),
-                new Claim("LastName", user.LastName),
-                new Claim("Address", user.Address),
-                new Claim("Photo", user.Photo ?? string.Empty),
-                new Claim("CityId", user.CityId.ToString())
-            };
+                {
+                    new Claim(ClaimTypes.Name, user.Email!),
+                    new Claim(ClaimTypes.Role, user.UserType.ToString())
+                    //new Claim("Document", user.Document),
+                    //new Claim("FirstName", user.FirstName),
+                    //new Claim("LastName", user.LastName),
+                    //new Claim("Address", user.Address),
+                    //new Claim("Photo", user.Photo ?? string.Empty),
+                    //new Claim("CityId", user.CityId.ToString())
+                };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwtKey"]!));
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -167,7 +167,13 @@ namespace Sales.API.Controllers
                 return new TokenDTO
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
-                    Expiration = expiration
+                    Expiration = expiration,
+                    Email = user.Email,
+                    //Nombres = user.FirstName,
+                    //Apellidos = user.LastName,
+                    TipoUsuario = user.UserType,
+                    Id = user.Id,
+                    EmpresaId = user.EmpresaId
                 };
             }
 
@@ -226,11 +232,11 @@ namespace Sales.API.Controllers
                     .Include(u => u.City)
                     .AsQueryable();
 
-                if (!string.IsNullOrWhiteSpace(pagination.Filter))
-                {
-                    queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
-                                                     x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
-                }
+                //if (!string.IsNullOrWhiteSpace(pagination.Filter))
+                //{
+                //    queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
+                //                                     x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
+                //}
 
                 return Ok(await queryable
                     .OrderBy(x => x.FirstName)
@@ -244,11 +250,11 @@ namespace Sales.API.Controllers
             {
                 var queryable = _context.Users.AsQueryable();
 
-                if (!string.IsNullOrWhiteSpace(pagination.Filter))
-                {
-                    queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
-                                                        x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
-                }
+                //if (!string.IsNullOrWhiteSpace(pagination.Filter))
+                //{
+                //    queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
+                //                                        x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
+                //}
 
                 double count = await queryable.CountAsync();
                 double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
@@ -332,6 +338,13 @@ namespace Sales.API.Controllers
                 }
 
                 return BadRequest(result.Errors.FirstOrDefault()!.Description);
+            }
+
+            [HttpGet("ExisteEmpresa/{email}")]
+            [AllowAnonymous]
+            public async Task<ActionResult<bool>> ExisteEmpresa(string email)
+            {
+                return await _context.Empresas.AnyAsync(x => x.Email == email);
             }
         }
     }

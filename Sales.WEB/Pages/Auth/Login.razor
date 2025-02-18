@@ -64,29 +64,29 @@
         await loginService.LoginAsync(responseHttp.Response!.Token);
 
         // Crear Cuentas
-        await CrearCuentas(ServicioUsuario.Empresa);
+        // await CrearCuentas(ServicioUsuario.Empresa);
 
         navigationManager.NavigateTo("/");
     }
 
-    private async Task CrearCuentas(int empresaId) 
-    {
-        List<Cuenta> Cuentas = new List<Cuenta>();
-        Cuenta cuenta = new Cuenta()
-            {
-                IdCuenta = 1,
-                CodigoCuenta = "1",
-                NombreCuenta = "DISPONIBLE",
-                Nivel = "1",
-                Estado = true,
-                TipoBase = "1",
-                EmpresaId = empresaId
-            };
-        Cuentas.Add(cuenta);
-        var responseHttp2 = await repository.Post("api/Cuentas/CuentasBase", cuenta);
-        if (responseHttp2.Error)
-        {
+    // private async Task CrearCuentas(int empresaId) 
+    // {
+    //     List<Cuenta> Cuentas = new List<Cuenta>();
+    //     Cuenta cuenta = new Cuenta()
+    //         {
+    //             IdCuenta = 1,
+    //             CodigoCuenta = "1",
+    //             NombreCuenta = "DISPONIBLE",
+    //             Nivel = "1",
+    //             Estado = true,
+    //             TipoBase = "1",
+    //             EmpresaId = empresaId
+    //         };
+    //     Cuentas.Add(cuenta);
+    //     var responseHttp2 = await repository.Post("api/Cuentas/CuentasBase", cuenta);
+    //     if (responseHttp2.Error)
+    //     {
 
-        }
-    }
+    //     }
+    // }
 }

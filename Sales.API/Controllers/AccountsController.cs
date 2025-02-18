@@ -261,7 +261,6 @@ namespace Sales.API.Controllers
                 return Ok(totalPages);
             }
 
-
             [HttpPost("ResedToken")]
             public async Task<ActionResult> ResedToken([FromBody] EmailDTO model)
             {

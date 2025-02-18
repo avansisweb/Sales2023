@@ -198,6 +198,8 @@
                 return;
             }
 
+            await CrearCuentas(httpResponse1.Response);
+
             userDTO.Email = EmpresaDTO.Email;
             userDTO.UserName = userDTO.Email;
             userDTO.Password = EmpresaDTO.Password;
@@ -218,16 +220,29 @@
                 await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
-
-            // var responseHttp2 = await repository.Post<EmpresaDTO, bool>("/api/accounts/CreateEmpresa", EmpresaDTO);
-            // if (responseHttp2.Error)
-            // {
-            //     var message = await responseHttp2.GetErrorMessageAsync();
-            //     await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            //     return;
-            // }
         }
         await sweetAlertService.FireAsync("Confirmación", "Su cuenta ha sido creada con éxito. Se te ha enviado un correo electrónico con las instrucciones para activar tu usuario.", SweetAlertIcon.Info);
         navigationManager.NavigateTo("/");
+    }
+
+    private async Task CrearCuentas(int empresaId)
+    {
+        List<Cuenta> Cuentas = new List<Cuenta>();
+        Cuenta cuenta = new Cuenta()
+            {
+                IdCuenta = 1,
+                CodigoCuenta = "1",
+                NombreCuenta = "DISPONIBLE",
+                Nivel = "1",
+                Estado = true,
+                TipoBase = "1",
+                EmpresaId = empresaId
+            };
+        Cuentas.Add(cuenta);
+        var responseHttp2 = await repository.Post("api/Cuentas/CuentasBase", cuenta);
+        if (responseHttp2.Error)
+        {
+
+        }
     }
 }

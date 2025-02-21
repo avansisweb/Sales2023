@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Sales.API.Helpers;
 using Sales.API.Services;
 using Sales.Shared.Entities;

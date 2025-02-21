@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sales.Shared.Responses
+﻿namespace Sales.Shared.Responses
 {
     public class Response
     {
